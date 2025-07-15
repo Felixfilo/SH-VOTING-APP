@@ -1,8 +1,8 @@
 # StudentsElections
 
 ***
-### Author : sharon chepkirui-bobitlmr188021
-             hannah mwangi-bobitlmr132123
+### Authors : sharon chepkirui-bobitlmr188021
+###        : hannah mwangi-bobitlmr132123
 
           
 **
