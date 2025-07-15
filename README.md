@@ -38,7 +38,7 @@ Or you can access the web application directly via this [https://github.com/shar
 
 ## Contact Information
 * Email : bobitlmr188021@spu.ac.ke
-          bobitlmr132123@spu.ac.ke
+     *     bobitlmr132123@spu.ac.ke
 ***
 ## [License]()
 MIT License
