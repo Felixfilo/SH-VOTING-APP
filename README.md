@@ -13,7 +13,7 @@ Student's Election Voting System.
 ****
 ## SetUp Instruction
 ### Requirements
-* [React](https://github.com/sharon-meli/Patients'-registration-system)
+* [python](https://github.com/sharon-meli/Patients'-registration-system)
 * Text editor eg [Visual Studio Code](https://code.visualstudio.com/download)
 
 
