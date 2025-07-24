@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %}Vote Successful - Student Election{% endblock %}
+
+{% block content %}
+<div class="success-container">
+    <div class="success-card">
+        <div class="success-header">
+            <i class="fas fa-check-circle success-icon"></i>
+            <h2>Vote Cast Successfully!</h2>
+        </div>
+        
+        <div class="success-message">
+            <p>Thank you for participating in the student government election. Your vote has been securely recorded and encrypted.</p>
+            
+            {% if profile.has_voted %}
+                <div class="completion-notice">
+                    <i class="fas fa-trophy"></i>
+                    <p><strong>You have completed voting for all positions!</strong></p>
+                    <p>Your participation in the democratic process is complete.</p>
+                </div>
+            {% else %}
+                <div class="continue-notice">
+                    <i class="fas fa-info-circle"></i>
+                    <p>You can continue voting for other positions.</p>
+                </div>
+            {% endif %}
+            
+            <div class="security-confirmation">
+                <div class="security-item">
+                    <i class="fas fa-lock"></i>
+                    <span>Vote Encrypted</span>
+                </div>
+                <div class="security-item">
+                    <i class="fas fa-eye-slash"></i>
+                    <span>Anonymous Ballot</span>
+                </div>
+                <div class="security-item">
+                    <i class="fas fa-clipboard-check"></i>
+                    <span>Action Logged</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="success-actions">
+            {% if not profile.has_voted %}
+                <a href="{% url 'dashboard' %}" class="btn btn-primary">
+                    <i class="fas fa-vote-yea"></i> Continue Voting
+                </a>
+            {% else %}
+                <a href="{% url 'dashboard' %}" class="btn btn-primary">
+                    <i class="fas fa-home"></i> Return to Dashboard
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

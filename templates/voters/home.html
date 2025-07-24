@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block title %}Vote Now - Students Election{% endblock %}
+
+{% block content %}
+<div class="voter-home">
+    <div class="voter-header">
+        <h2>Cast Your Vote</h2>
+        {% if voter.has_voted %}
+            <div class="vote-status completed">
+                <span>✓ You have completed voting</span>
+            </div>
+        {% else %}
+            <div class="vote-status pending">
+                <span>Please vote for each position</span>
+            </div>
+        {% endif %}
+    </div>
+
+    {% for position in positions %}
+        <div class="position-section">
+            <h3 class="position-title">{{ position.title }}</h3>
+            {% if position.description %}
+                <p class="position-description">{{ position.description }}</p>
+            {% endif %}
+            
+            <div class="candidates-grid">
+                {% for candidate in position.candidates.all %}
+                    <div class="candidate-card">
+                        {% if candidate.photo %}
+                            <img src="{{ candidate.photo.url }}" alt="{{ candidate.name }}" class="candidate-photo">
+                        {% else %}
+                            <div class="candidate-photo-placeholder">
+                                <span>{{ candidate.name|first }}</span>
+                            </div>
+                        {% endif %}
+                        
+                        <div class="candidate-info">
+                            <h4 class="candidate-name">{{ candidate.name }}</h4>
+                            <p class="candidate-bio">{{ candidate.bio }}</p>
+                            
+                            {% if candidate.id in user_votes %}
+                                <button class="btn btn-voted" disabled>
+                                    ✓ Voted
+                                </button>
+                            {% elif voter.has_voted %}
+                                <button class="btn btn-disabled" disabled>
+                                    Voting Complete
+                                </button>
+                            {% else %}
+                                <form method="post" action="{% url 'cast_vote' candidate.id %}" class="vote-form">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-primary" 
+                                            onclick="return confirm('Are you sure you want to vote for {{ candidate.name }}?')">
+                                        Vote for {{ candidate.name }}
+                                    </button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% empty %}
+                    <p class="no-candidates">No candidates available for this position.</p>
+                {% endfor %}
+            </div>
+        </div>
+    {% empty %}
+        <div class="no-positions">
+            <p>No positions available for voting at this time.</p>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

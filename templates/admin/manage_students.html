@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2 class="page-title">
+                    <i class="fas fa-user-graduate text-primary"></i>
+                    Student Registry Management
+                </h2>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addStudentModal">
+                        <i class="fas fa-plus-circle"></i> Add New Student
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card registry-card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-table text-primary me-2"></i>
+                        <h5 class="card-title mb-0">Student Registry</h5>
+                    </div>
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="studentSearch" class="form-control" placeholder="Search students...">
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover glossy-table mb-0">
+                            <thead>
+                                <tr>
+                                    <th><i class="fas fa-id-card text-primary me-2"></i>Reg. Number</th>
+                                    <th><i class="fas fa-user text-primary me-2"></i>Full Name</th>
+                                    <th><i class="fas fa-envelope text-primary me-2"></i>Email</th>
+                                    <th><i class="fas fa-building text-primary me-2"></i>Department</th>
+                                    <th><i class="fas fa-calendar-alt text-primary me-2"></i>Year</th>
+                                    <th><i class="fas fa-check-circle text-primary me-2"></i>Status</th>
+                                    <th><i class="fas fa-cog text-primary me-2"></i>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for student in students %}
+                                <tr class="student-row">
+                                    <td class="fw-bold">{{ student.reg_number }}</td>
+                                    <td>{{ student.full_name }}</td>
+                                    <td>
+                                        <a href="mailto:{{ student.email }}" class="text-primary text-decoration-none">
+                                            {{ student.email }}
+                                        </a>
+                                    </td>
+                                    <td>{{ student.department }}</td>
+                                    <td class="text-center">{{ student.year_of_study }}</td>
+                                    <td>
+                                        {% if student.is_active %}
+                                        <span class="status-badge status-active">
+                                            <i class="fas fa-check-circle"></i> Active
+                                        </span>
+                                        {% else %}
+                                        <span class="status-badge status-inactive">
+                                            <i class="fas fa-times-circle"></i> Inactive
+                                        </span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="btn btn-sm btn-outline-primary" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger" title="Delete">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="7" class="text-center py-4">
+                                        <div class="empty-state">
+                                            <i class="fas fa-users text-muted"></i>
+                                            <p>No students registered yet</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Student Modal -->
+<div class="modal fade" id="addStudentModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-user-plus text-primary"></i>
+                    Add New Student
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    {% for field in form %}
+                    <div class="form-group mb-3">
+                        <label for="{{ field.id_for_label }}" class="form-label">
+                            <i class="fas fa-{{ field.name|lower }}-alt text-primary"></i>
+                            {{ field.label }}
+                        </label>
+                        {{ field }}
+                        {% if field.errors %}
+                        <div class="invalid-feedback">
+                            {{ field.errors }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                    <div class="modal-footer border-0 px-0 pb-0">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Save Student
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

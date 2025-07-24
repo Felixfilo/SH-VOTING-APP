@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+
+{% block title %}Voting Ended - Election System{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <i class="fas fa-flag-checkered auth-icon"></i>
+            <h2>Voting Period Ended</h2>
+            <p>The election period has concluded</p>
+        </div>
+
+        <div class="election-info">
+            <div class="info-item">
+                <i class="fas fa-calendar-check"></i>
+                <div class="info-content">
+                    <h3>Election Name</h3>
+                    <p>{{ election_settings.name }}</p>
+                </div>
+            </div>
+
+            <div class="info-item">
+                <i class="fas fa-hourglass-end"></i>
+                <div class="info-content">
+                    <h3>Voting Ended</h3>
+                    <p>{{ election_settings.voting_end|date:"F j, Y" }} at {{ election_settings.voting_end|time:"g:i A" }}</p>
+                </div>
+            </div>
+
+            {% if election_settings.results_published %}
+            <div class="info-item success">
+                <i class="fas fa-chart-bar"></i>
+                <div class="info-content">
+                    <h3>Results Status</h3>
+                    <p>Results have been published</p>
+                </div>
+            </div>
+            {% else %}
+            <div class="info-item pending">
+                <i class="fas fa-clock"></i>
+                <div class="info-content">
+                    <h3>Results Status</h3>
+                    <p>Results will be published soon</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="action-buttons">
+            {% if election_settings.results_published %}
+            <a href="{% url 'results_view' %}" class="btn btn-primary">
+                <i class="fas fa-chart-pie"></i> View Results
+            </a>
+            {% endif %}
+            <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+                <i class="fas fa-tachometer-alt"></i> Back to Dashboard
+            </a>
+            <a href="{% url 'login' %}" class="btn btn-secondary">
+                <i class="fas fa-home"></i> Back to Login
+            </a>
+        </div>
+
+        <div class="security-notice">
+            <i class="fas fa-info-circle"></i>
+            <p>The voting period has ended. {% if not election_settings.results_published %}Results will be published by the administration once they are finalized.{% endif %}</p>
+        </div>
+    </div>
+</div>
+
+<style>
+.election-info {
+    margin: 2rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.info-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--accent-color);
+    border-radius: var(--border-radius);
+    transition: var(--transition);
+}
+
+.info-item.success {
+    background: rgba(16, 185, 129, 0.1);
+}
+
+.info-item.success i {
+    color: var(--success-color);
+}
+
+.info-item.pending {
+    background: rgba(245, 158, 11, 0.1);
+}
+
+.info-item.pending i {
+    color: var(--warning-color);
+}
+
+.info-item i {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    background: var(--white);
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow);
+}
+
+.info-content {
+    flex: 1;
+}
+
+.info-content h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin: 0 0 0.25rem 0;
+}
+
+.info-content p {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    margin: 0;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.action-buttons .btn {
+    flex: 1;
+    justify-content: center;
+}
+</style>
+{% endblock %}

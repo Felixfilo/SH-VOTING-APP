@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+
+{% block title %}Election Results - Student Election{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2 class="page-title">
+                    <i class="fas fa-chart-bar text-primary"></i>
+                    {{ election_settings.name }} - Results
+                </h2>
+                <div class="d-flex gap-2">
+                    {% if pdf_available %}
+                    <a href="{% url 'export_results_pdf' %}" class="btn btn-success">
+                        <i class="fas fa-file-pdf"></i> Export PDF
+                    </a>
+                    {% endif %}
+                    <a href="{% url 'admin_dashboard' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left"></i> Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Stats Cards -->
+    <div class="row mb-4 justify-content-center flex-nowrap overflow-auto" style="gap: 1rem;">
+        <div class="col-12 col-md-4 col-lg-3 d-flex flex-column" style="min-width: 220px;">
+            <div class="card stat-card flex-fill">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon bg-primary">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-content ms-3">
+                            <h3 class="mb-0">{{ voted_count }}</h3>
+                            <p class="text-muted mb-0">Votes Cast</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-4 col-lg-3 d-flex flex-column" style="min-width: 220px;">
+            <div class="card stat-card flex-fill">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon bg-success">
+                            <i class="fas fa-user-check"></i>
+                        </div>
+                        <div class="stat-content ms-3">
+                            <h3 class="mb-0">{{ total_voters }}</h3>
+                            <p class="text-muted mb-0">Total Voters</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-4 col-lg-3 d-flex flex-column" style="min-width: 220px;">
+            <div class="card stat-card flex-fill">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon bg-info">
+                            <i class="fas fa-chart-pie"></i>
+                        </div>
+                        <div class="stat-content ms-3">
+                            <h3 class="mb-0">
+                                {% if total_voters > 0 %}
+                                    {% widthratio voted_count total_voters 100 %}%
+                                {% else %}
+                                    0%
+                                {% endif %}
+                            </h3>
+                            <p class="text-muted mb-0">Turnout Rate</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Position Results -->
+    {% for result in results_data %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-crown text-primary me-2"></i>
+                            <h5 class="card-title mb-0">{{ result.position.name }}</h5>
+                        </div>
+                        <span class="badge bg-primary rounded-pill">
+                            {{ result.total_votes }} total votes
+                        </span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for candidate in result.candidates %}
+                        <div class="col-md-6 mb-4">
+                            <div class="candidate-card {% if forloop.first and candidate.vote_count > 0 %}winner{% endif %}">
+                                <div class="d-flex">
+                                    <div class="candidate-photo-wrapper me-3">
+                                        {% if candidate.photo %}
+                                        <img src="{{ candidate.photo.url }}" alt="{{ candidate.name }}" class="candidate-photo">
+                                        {% else %}
+                                        <div class="candidate-photo-placeholder">
+                                            <i class="fas fa-user"></i>
+                                        </div>
+                                        {% endif %}
+                                        {% if forloop.first and candidate.vote_count > 0 %}
+                                        <div class="winner-badge">
+                                            <i class="fas fa-crown"></i>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="candidate-info flex-grow-1">
+                                        <h5 class="mb-1">{{ candidate.name }}</h5>
+                                        <p class="text-muted small mb-2">{{ candidate.bio|truncatewords:15 }}</p>
+                                        <div class="vote-stats">
+                                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                                <span class="fw-bold">{{ candidate.vote_count }} votes</span>
+                                                <span class="text-primary">{{ candidate.percentage }}%</span>
+                                            </div>
+                                            <div class="progress">
+                                                <div class="progress-bar {% if forloop.first and candidate.vote_count > 0 %}bg-success{% else %}bg-primary{% endif %}" 
+                                                     role="progressbar" 
+                                                     style="width: {{ candidate.percentage }}%" 
+                                                     aria-valuenow="{{ candidate.percentage }}" 
+                                                     aria-valuemin="0" 
+                                                     aria-valuemax="100">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="col-12">
+                            <div class="empty-state text-center py-5">
+                                <i class="fas fa-users-slash text-muted fs-1 mb-3"></i>
+                                <p class="text-muted">No candidates in this position.</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="empty-state text-center py-5">
+                        <i class="fas fa-chart-bar text-muted fs-1 mb-3"></i>
+                        <h4 class="text-muted">No Results Available</h4>
+                        <p class="text-muted">No positions or votes have been recorded yet.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

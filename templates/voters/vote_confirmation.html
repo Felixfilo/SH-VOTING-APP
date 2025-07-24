@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}Confirm Vote - Student Election{% endblock %}
+
+{% block content %}
+<div class="confirmation-container">
+    <div class="confirmation-card">
+        <div class="confirmation-header">
+            <i class="fas fa-question-circle confirmation-icon"></i>
+            <h2>Confirm Your Vote</h2>
+        </div>
+        
+        <div class="candidate-preview">
+            <div class="candidate-photo-container">
+                {% if candidate.photo %}
+                    <img src="{{ candidate.photo.url }}" alt="{{ candidate.name }}" class="candidate-photo">
+                {% else %}
+                    <div class="candidate-photo-placeholder">
+                        <i class="fas fa-user"></i>
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="candidate-details">
+                <h3>{{ candidate.name }}</h3>
+                <p class="position-name">{{ candidate.position.name }}</p>
+                <p class="candidate-bio">{{ candidate.bio }}</p>
+            </div>
+        </div>
+        
+        <div class="confirmation-message">
+            <p><strong>Are you sure you want to vote for {{ candidate.name }} for {{ candidate.position.name }}?</strong></p>
+            <div class="warning-text">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p>This action cannot be undone. You can only vote once per position.</p>
+            </div>
+            <div class="security-notice">
+                <i class="fas fa-shield-alt"></i>
+                <p>Your vote will be encrypted and stored anonymously for ballot secrecy.</p>
+            </div>
+        </div>
+        
+        <div class="confirmation-actions">
+            <form method="post" class="confirm-form">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-check"></i> Yes, Cast My Vote
+                </button>
+            </form>
+            
+            <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Go Back
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

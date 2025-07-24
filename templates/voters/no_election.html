@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %}No Active Election - Student Election System{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <i class="fas fa-calendar-times auth-icon"></i>
+            <h2>No Active Election</h2>
+            <p>There is currently no active election in the system</p>
+        </div>
+        
+        <div class="auth-form">
+            <div class="security-notice">
+                <i class="fas fa-info-circle"></i>
+                <p>Elections are scheduled and activated by the administration. Please check back later or contact the election administration for more information.</p>
+            </div>
+            
+            <div class="security-notice" style="margin-top: 1rem;">
+                <i class="fas fa-clock"></i>
+                <p>When an election is activated, you will be able to view candidates and cast your votes here.</p>
+            </div>
+        </div>
+        
+        <div class="auth-footer">
+            <p>Have questions? Contact your student election administrator.</p>
+            <a href="{% url 'dashboard' %}" class="btn btn-primary btn-full">
+                <i class="fas fa-home"></i> Return to Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

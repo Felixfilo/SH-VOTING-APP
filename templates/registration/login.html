@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - Student Election System{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <i class="fas fa-sign-in-alt auth-icon"></i>
+            <h2>Secure Login</h2>
+            <p>Access the student government election system</p>
+        </div>
+        
+        <form method="post" class="auth-form">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="{{ form.username.id_for_label }}">
+                    <i class="fas fa-user"></i> Username / Registration Number
+                </label>
+                {{ form.username }}
+                {% if form.username.errors %}
+                    <div class="form-errors">
+                        {% for error in form.username.errors %}
+                            <span class="error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.password.id_for_label }}">
+                    <i class="fas fa-lock"></i> Password
+                </label>
+                {{ form.password }}
+                {% if form.password.errors %}
+                    <div class="form-errors">
+                        {% for error in form.password.errors %}
+                            <span class="error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-user-tag"></i> Login as:
+                </label>
+                <div class="radio-group">
+                    {% for choice in form.category %}
+                        <label class="radio-label">
+                            {{ choice.tag }}
+                            <span class="radio-text">
+                                <i class="fas fa-{% if choice.choice_value == 'Voter' %}users{% else %}user-shield{% endif %}"></i>
+                                {{ choice.choice_label }}
+                            </span>
+                        </label>
+                    {% endfor %}
+                </div>
+                {% if form.category.errors %}
+                    <div class="form-errors">
+                        {% for error in form.category.errors %}
+                            <span class="error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-full">
+                <i class="fas fa-sign-in-alt"></i> Secure Login
+            </button>
+        </form>
+        
+        <div class="auth-footer">
+            <p>Student? <a href="{% url 'register' %}">Register here</a></p>
+            <p>Administrator? <a href="{% url 'admin_register' %}">Register here</a></p>
+        </div>
+        
+        <div class="security-notice">
+            <i class="fas fa-shield-alt"></i>
+            <p>Your vote is encrypted and anonymous. All actions are logged for transparency.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

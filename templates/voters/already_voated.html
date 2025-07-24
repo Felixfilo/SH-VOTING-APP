@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}Already Voted - Student Election{% endblock %}
+
+{% block content %}
+<div class="already-voted-container">
+    <div class="already-voted-card">
+        <div class="already-voted-header">
+            <i class="fas fa-exclamation-circle warning-icon"></i>
+            <h2>Already Voted</h2>
+        </div>
+        
+        <div class="already-voted-message">
+            {% if existing_candidate %}
+                <p>You have already voted for <strong>{{ existing_candidate.name }}</strong> in the <strong>{{ candidate.position.name }}</strong> position.</p>
+            {% else %}
+                <p>You have already cast your vote for this position.</p>
+            {% endif %}
+            
+            <div class="voting-rules">
+                <i class="fas fa-info-circle"></i>
+                <p>Each student can only vote once per position to ensure fair and secure elections.</p>
+            </div>
+            
+            <div class="security-reminder">
+                <i class="fas fa-shield-alt"></i>
+                <p>Your previous vote is encrypted and secure. The system prevents duplicate voting to maintain election integrity.</p>
+            </div>
+        </div>
+        
+        <div class="already-voted-actions">
+            <a href="{% url 'dashboard' %}" class="btn btn-primary">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

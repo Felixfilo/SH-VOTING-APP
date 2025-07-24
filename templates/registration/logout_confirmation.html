@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}Logout - Student Election{% endblock %}
+
+{% block content %}
+<div class="logout-container">
+    <div class="logout-card">
+        <div class="logout-header">
+            <i class="fas fa-sign-out-alt logout-icon"></i>
+            <h2>Confirm Logout</h2>
+        </div>
+        
+        <div class="logout-message">
+            <p>Are you sure you want to log out of the Student Election System?</p>
+            <div class="security-info">
+                <i class="fas fa-shield-alt"></i>
+                <p>Your session will be securely terminated and logged for audit purposes.</p>
+            </div>
+        </div>
+        
+        <div class="logout-actions">
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">
+                    <i class="fas fa-sign-out-alt"></i> Yes, Logout
+                </button>
+            </form>
+            
+            <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Cancel
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

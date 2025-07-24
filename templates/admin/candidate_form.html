@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} - Students Election{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="form-card">
+        <div class="form-header">
+            <h2><i class="fas fa-user-tie"></i> {{ title }}</h2>
+            <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary btn-sm">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+        
+        <form method="post" enctype="multipart/form-data" class="admin-form">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="{{ form.name.id_for_label }}">
+                    <i class="fas fa-user"></i> Candidate Name
+                </label>
+                {{ form.name }}
+                {% if form.name.errors %}
+                    <div class="form-errors">
+                        {% for error in form.name.errors %}
+                            <span class="error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.position.id_for_label }}">
+                    <i class="fas fa-crown"></i> Position
+                </label>
+                {{ form.position }}
+                {% if form.position.errors %}
+                    <div class="form-errors">
+                        {% for error in form.position.errors %}
+                            <span class="error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.bio.id_for_label }}">
+                    <i class="fas fa-align-left"></i> Biography
+                </label>
+                {{ form.bio }}
+                {% if form.bio.errors %}
+                    <div class="form-errors">
+                        {% for error in form.bio.errors %}
+                            <span class="error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.photo.id_for_label }}">
+                    <i class="fas fa-camera"></i> Photo
+                </label>
+                {{ form.photo }}
+                {% if candidate and candidate.photo %}
+                    <div class="current-photo">
+                        <p>Current photo:</p>
+                        <img src="{{ candidate.photo.url }}" alt="{{ candidate.name }}" class="preview-photo">
+                    </div>
+                {% endif %}
+                {% if form.photo.errors %}
+                    <div class="form-errors">
+                        {% for error in form.photo.errors %}
+                            <span class="error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group switch-container">
+                <label class="switch">
+                    {{ form.is_active }}
+                    <span class="slider round"></span>
+                </label>
+                <span class="switch-label">Active Candidate</span>
+                {% if form.is_active.errors %}
+                    <div class="form-errors">
+                        {% for error in form.is_active.errors %}
+                            <span class="error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <small class="form-help">Toggle switch to make the candidate visible and available for voting.</small>
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Save Candidate
+                </button>
+                <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %}Audit Logs - Student Election{% endblock %}
+
+{% block content %}
+<div class="logs-container">
+    <div class="logs-header">
+        <h1><i class="fas fa-clipboard-list"></i> Election Audit Logs</h1>
+        <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+    
+    <div class="logs-info">
+        <div class="info-card">
+            <i class="fas fa-info-circle"></i>
+            <p>All election activities are automatically logged for transparency and security. This includes user logins, votes cast, administrative actions, and system events.</p>
+        </div>
+    </div>
+    
+    <div class="logs-section">
+        <div class="logs-table-container">
+            <table class="logs-table">
+                <thead>
+                    <tr>
+                        <th>Timestamp</th>
+                        <th>Action</th>
+                        <th>User</th>
+                        <th>Description</th>
+                        <th>IP Address</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in logs %}
+                        <tr class="log-row log-{{ log.action|lower }}">
+                            <td class="log-timestamp">{{ log.timestamp|date:"M d, Y H:i:s" }}</td>
+                            <td class="log-action">
+                                <span class="action-badge action-{{ log.action|lower }}">
+                                    <i class="fas fa-{% if log.action == 'LOGIN' %}sign-in-alt{% elif log.action == 'LOGOUT' %}sign-out-alt{% elif log.action == 'VOTE' %}vote-yea{% elif log.action == 'PDF_EXPORT' %}file-pdf{% else %}cog{% endif %}"></i>
+                                    {{ log.get_action_display }}
+                                </span>
+                            </td>
+                            <td class="log-user">
+                                {% if log.user %}
+                                    {{ log.user.get_full_name|default:log.user.username }}
+                                    {% if log.user.voterprofile.reg_number %}
+                                        <br><small>({{ log.user.voterprofile.reg_number }})</small>
+                                    {% endif %}
+                                {% else %}
+                                    <em>System</em>
+                                {% endif %}
+                            </td>
+                            <td class="log-description">{{ log.description }}</td>
+                            <td class="log-ip">{{ log.ip_address|default:"-" }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center">No audit logs available.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
