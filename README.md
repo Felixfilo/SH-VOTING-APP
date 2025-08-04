@@ -199,7 +199,7 @@ The Student Election System is a Django-based web application that manages stude
    - Compatibility testing
 
 ### Registration System
-- Uses custom registration numbers in format `SPUxxxxx/yy` (e.g. SPU02236/25)
+- Uses custom registration numbers in format `bobitlmr132123` (e.g. bobitlm132123)
 - Student/Admin records must exist in `StudentRegistry` before registration
 - Two-step verification: registration number + admin secret code for admins
 
@@ -224,9 +224,9 @@ The Student Election System is a Django-based web application that manages stude
 ```python
 from Voters.models import StudentRegistry
 StudentRegistry.objects.create(
-    reg_number="SPU02236/25",
+    reg_number="bobitlmr132123",
     full_name="Student Name", 
-    email="student@example.com",
+    email="student@spu.ac.ke",
     department="Computer Science",
     is_active=True
 )
@@ -267,7 +267,7 @@ StudentRegistry.objects.create(
 python manage.py shell
 from Voters.models import StudentRegistry
 StudentRegistry.objects.create(
-    reg_number="SPUxxxxx/yy",
+    reg_number="bobitlmr132123",
     full_name="Name",
     email="email",
     department="Dept",
