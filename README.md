@@ -1,6 +1,8 @@
 # README.md
 
-This document provides guidance for GitHub Copilot when working with the Student Election System codebase.
+# Authors
+#Bobitlmr188021
+#Bobitlmr
 
 ## Project Overview
 
