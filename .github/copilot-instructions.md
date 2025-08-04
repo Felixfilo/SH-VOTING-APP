@@ -1,10 +1,10 @@
-# GitHub Copilot Instructions for Student Election System
+Instructions for Student Election System
 
-This document provides guidance for GitHub Copilot when working with the Student Election System codebase.
+
 
 ## Project Overview
 
-The Student Election System is a Django-based web application that manages student government elections. The system handles user authentication, student registration, candidate management, secure voting, and result tabulation.
+The Student Election System is a Django-based web application that manages student elections. The system handles user authentication, student registration, candidate management, secure voting, and result tabulation.
 
 ## Technology Stack
 
