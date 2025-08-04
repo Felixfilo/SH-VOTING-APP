@@ -4,17 +4,17 @@ admin secret code = @123456789
 
 
 
-reg_number="SPU02236/25",
+reg_number="bobitlmr132123",
 full_name="Student Name",
-email="student@example.com",
+email="student@spu.ac.ke",
 department="Computer Science",
 password="@1testspu"
 
 
 
 Username=Felix
-reg_number="SPU00001/25",
+reg_number="bobitlmr132123",
 full_name="Admin Name",
-email="admin@example.com",
+email="admin@spu.ac.ke",
 department="Administration",
 password="@1testspu"
