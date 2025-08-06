@@ -138,7 +138,7 @@ def dashboard(request):
     user_votes = Vote.objects.filter(voter=profile).values_list('candidate_id', flat=True)
     
     # Check if user has voted in any position
-    has_voted = Vote.objects.filter(voter=profile).exists()
+    has_voted = Vote.objects.filter(voter=profile).exists() 
     
     context = {
         'positions': positions,

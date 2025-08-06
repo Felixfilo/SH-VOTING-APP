@@ -16,7 +16,7 @@ from pathlib import Path
 ADMIN_SECRET_CODE = '@123456789'  # This matches the password in credentials.md
 
 # Encryption key for vote encryption
-VOTE_ENCRYPTION_KEY = 'b_qhxPlfAhEwJzVDkC57mGeLZjyHG7xMXCCj-YM7u28='
+VOTE_ENCRYPTION_KEY = 'ZKbhUMyN_JP08pfzCvatPhmX7Fr0ZffDHBS06JZvRvc='
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -27,11 +27,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-(%6mr75^+hp9-vclwu+@15=^ef!-*2o5q7vzgveq=3f&-tuoy9'
+VOTE_ENCRYPTION_KEY = "Zs3iVPv3bqsmNITZ_Vd0xQdWObaA3zFqvOBbd3N7MUI="
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = []
+
 
 
 # Application definition

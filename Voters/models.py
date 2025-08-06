@@ -1,7 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
 from Admin.models import Candidate, AuditLog
-from cryptography.fernet import Fernet
+from Crypto.Cipher import AES
+from Crypto.Random import get_random_bytes
+from base64 import b64encode, b64decode
 from django.conf import settings
 import json
 import logging
@@ -84,37 +86,48 @@ class EncryptedVote(models.Model):
             'position_name': candidate.position.name,
             'timestamp': str(timezone.now())
         }
-        
-        # Encrypt the vote data
-        fernet = Fernet(settings.VOTE_ENCRYPTION_KEY.encode())
-        encrypted_data = fernet.encrypt(json.dumps(vote_data).encode()).decode()
-        
-        # Store the encrypted vote
+        key = hashlib.sha256(settings.VOTE_ENCRYPTION_KEY.encode()).digest()  # 32-byte key
+        cipher = AES.new(key, AES.MODE_EAX)
+        ciphertext, tag = cipher.encrypt_and_digest(json.dumps(vote_data).encode())
+
+        # Combine nonce, tag, and ciphertext for storage
+        encrypted_blob = {
+            'nonce': b64encode(cipher.nonce).decode(),
+            'tag': b64encode(tag).decode(),
+            'ciphertext': b64encode(ciphertext).decode()
+        }
+
         encrypted_vote = cls.objects.create(
             voter_hash=voter_hash,
-            encrypted_vote_data=encrypted_data,
+            encrypted_vote_data=json.dumps(encrypted_blob),
             position_id=candidate.position.id
         )
-        
-        # Update candidate vote count
+
         candidate.vote_count += 1
         candidate.save()
-        
-        # Log the vote action
+
         AuditLog.log_action(
             user=voter.user,
             action='VOTE',
             description=f"Vote cast for position: {candidate.position.name}"
         )
-        
+
         return encrypted_vote
-    
+
     @classmethod
     def decrypt_vote(cls, encrypted_vote):
         """Decrypt a vote for admin purposes (if needed)"""
         try:
-            fernet = Fernet(settings.VOTE_ENCRYPTION_KEY.encode())
-            decrypted_data = fernet.decrypt(encrypted_vote.encrypted_vote_data.encode())
+            encrypted_blob = json.loads(encrypted_vote.encrypted_vote_data)
+            key = hashlib.sha256(settings.VOTE_ENCRYPTION_KEY.encode()).digest()
+
+            nonce = b64decode(encrypted_blob['nonce'])
+            tag = b64decode(encrypted_blob['tag'])
+            ciphertext = b64decode(encrypted_blob['ciphertext'])
+
+            cipher = AES.new(key, AES.MODE_EAX, nonce=nonce)
+            decrypted_data = cipher.decrypt_and_verify(ciphertext, tag)
+
             return json.loads(decrypted_data.decode())
         except Exception as e:
             logger.error(f"Failed to decrypt vote: {e}")

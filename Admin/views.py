@@ -7,18 +7,23 @@ from django.template.loader import render_to_string
 from django.utils import timezone
 from datetime import datetime
 import io
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
+from reportlab.lib.styles import ParagraphStyle
+from reportlab.platypus import SimpleDocTemplate, Paragraph
+from io import BytesIO
 
 from .models import Position, Candidate, ElectionSettings, AuditLog
 from .forms import PositionForm, CandidateForm, ElectionSettingsForm, AdminRegistrationForm, StudentRegistryForm
 from Voters.models import VoterProfile, Vote, EncryptedVote, StudentRegistry
 
-# WeasyPrint for PDF generation
+# ReportLab for PDF generation
 PDF_AVAILABLE = False
-weasyprint_html = None
+reportlab_pdf = None
 
 try:
-    from weasyprint import HTML
-    weasyprint_html = HTML
+    from reportlab.pdfgen import canvas
+    reportlab_pdf = canvas
     PDF_AVAILABLE = True
 except ImportError:
     pass
@@ -331,82 +336,112 @@ def results_view(request):
     
     return render(request, 'admin/results.html', context)
 
+import io
+from django.http import HttpResponse
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.units import inch
+from reportlab.lib.styles import getSampleStyleSheet
+
 @login_required
 @user_passes_test(is_admin)
 def export_results_pdf(request):
-    if not PDF_AVAILABLE:
-        messages.error(request, 'PDF export is not available. Please install WeasyPrint.')
+    # Ensure ReportLab is available
+    try:
+        from reportlab.pdfgen import canvas
+    except ImportError:
+        messages.error(request, 'PDF export is not available. Please install ReportLab.')
         return redirect('results_view')
     
     election_settings = ElectionSettings.get_current()
     positions = Position.objects.filter(is_active=True).prefetch_related('candidates')
-    
+
     results_data = []
     total_all_votes = 0
-    
+
     for position in positions:
         candidates_data = []
         total_position_votes = 0
-        
-        # Use Candidate model's reverse lookup
+
         position_candidates = Candidate.objects.filter(position=position, is_active=True)
         for candidate in position_candidates:
             vote_count = Vote.objects.filter(candidate=candidate).count()
             candidate.vote_count = vote_count
             total_position_votes += vote_count
             candidates_data.append(candidate)
-        
-        # Calculate percentages
+
         for candidate in candidates_data:
             if total_position_votes > 0:
                 candidate.percentage = round((candidate.vote_count / total_position_votes) * 100, 1)
             else:
                 candidate.percentage = 0
-        
-        # Sort by vote count (descending)
+
         candidates_data.sort(key=lambda x: x.vote_count, reverse=True)
-        
+
         results_data.append({
             'position': position,
             'candidates': candidates_data,
             'total_votes': total_position_votes
         })
-        
+
         total_all_votes += total_position_votes
-    
-    context = {
-        'results_data': results_data,
-        'total_voters': VoterProfile.objects.filter(category='Voter', is_approved=True).count(),
-        'voted_count': VoterProfile.objects.filter(category='Voter', has_voted=True).count(),
-        'total_all_votes': total_all_votes,
-        'generation_date': timezone.now(),
-        'admin_name': request.user.get_full_name() or request.user.username,
-        'election_settings': election_settings,
-    }
-    
-    # Render HTML template
-    html_string = render_to_string('admin/export_results.html', context)
-    
-    # Generate PDF
-    if not weasyprint_html:
-        messages.error(request, 'PDF export is not available. WeasyPrint HTML functionality is missing.')
-        return redirect('results_view')
-        
-    html = weasyprint_html(string=html_string, base_url=request.build_absolute_uri())
-    pdf = html.write_pdf()
-    
-    # Log the PDF export
+
+    total_voters = VoterProfile.objects.filter(category='Voter', is_approved=True).count()
+    voted_count = VoterProfile.objects.filter(category='Voter', has_voted=True).count()
+
+    # --- Generate PDF using ReportLab ---
+    buffer = io.BytesIO()
+    p = canvas.Canvas(buffer, pagesize=A4)
+    width, height = A4
+
+    x_margin = 1 * inch
+    y = height - 1 * inch
+    line_height = 14
+
+    def draw_line(text, font_size=12):
+        nonlocal y
+        if y <= 1 * inch:
+            p.showPage()
+            y = height - 1 * inch
+        p.setFont("Helvetica", font_size)
+        p.drawString(x_margin, y, text)
+        y -= line_height
+
+    # PDF Title
+    draw_line("Election Results Report", 14)
+    draw_line(f"Generated on: {timezone.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    draw_line(f"Admin: {request.user.get_full_name() or request.user.username}")
+    draw_line("")
+
+    draw_line(f"Total Registered Voters: {total_voters}")
+    draw_line(f"Total Voted: {voted_count}")
+    draw_line(f"Total Votes Counted: {total_all_votes}")
+    draw_line("")
+
+    for item in results_data:
+        draw_line(f"Position: {item['position'].name}", 13)
+        draw_line(f"Total Votes for this Position: {item['total_votes']}")
+        for candidate in item['candidates']:
+            draw_line(f" - {candidate.name}: {candidate.vote_count} votes ({candidate.percentage}%)")
+        draw_line("")
+
+    # Finalize PDF
+    p.save()
+    pdf = buffer.getvalue()
+    buffer.close()
+
+    # Audit log
     AuditLog.log_action(
         user=request.user,
         action='PDF_EXPORT',
         description="Election results exported to PDF",
         request=request
     )
-    
-    # Create response
+
     response = HttpResponse(pdf, content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="election_results_{timezone.now().strftime("%Y%m%d_%H%M%S")}.pdf"'
-    
+    filename = f'election_results_{timezone.now().strftime("%Y%m%d_%H%M%S")}.pdf'
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+
     return response
 
 @login_required
