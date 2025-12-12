@@ -2,9 +2,12 @@ asgiref==3.9.1
 Brotli==1.1.0
 cffi==1.17.1
 charset-normalizer==3.4.2
+cryptography==45.0.5
 cssselect2==0.8.0
 Django==5.2.4
 fonttools==4.59.0
+gunicorn==23.0.0
+packaging==25.0
 pdfkit==1.0.0
 pillow==11.3.0
 pycparser==2.22
@@ -18,3 +21,4 @@ tinyhtml5==2.0.0
 weasyprint==65.1
 webencodings==0.5.1
 zopfli==0.2.3.post1
+gunicorn==23.0.0
