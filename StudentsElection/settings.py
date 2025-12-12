@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Admin Secret Code for registration
@@ -31,9 +32,9 @@ VOTE_ENCRYPTION_KEY = "Zs3iVPv3bqsmNITZ_Vd0xQdWObaA3zFqvOBbd3N7MUI="
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = 'RENDER' not in os.environ
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 
