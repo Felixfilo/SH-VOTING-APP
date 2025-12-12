@@ -32,7 +32,7 @@ VOTE_ENCRYPTION_KEY = "Zs3iVPv3bqsmNITZ_Vd0xQdWObaA3zFqvOBbd3N7MUI="
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = 'RENDER' not in os.environ
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
